@@ -2,7 +2,7 @@ from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 
-def imread (self, filename):
+def imread (filename):
     im = Image.open(filename).convert('LA')
     l,w = im.size
     pix = im.load()
@@ -14,6 +14,11 @@ def imread (self, filename):
             result[r,c] = d
 
     return result
+    
+def imsave(img, filename):
+    t = Image.fromarray(img)
+    t.save(filename)
+    return
     
     
 def bfs (data, mask, i, j):
