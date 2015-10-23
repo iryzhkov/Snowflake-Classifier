@@ -2,7 +2,7 @@ from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 
-def open (self, filename):
+def imread (self, filename):
     im = Image.open(filename).convert('LA')
     l,w = im.size
     pix = im.load()
@@ -14,6 +14,7 @@ def open (self, filename):
             result[r,c] = d
 
     return result
+    
     
 def bfs (data, mask, i, j):
     iMax, iMin = i,i
@@ -91,28 +92,12 @@ def boxImage (filename, minDim = 40, t=24, savePath=None):
                 mask, box = bfs(helpImg, mask, i, j)
                 boxes.append(box)
     
-    counter = 0
-    '''plt.figure (figsize = (10,10))
-    plt.imshow(img, cmap='gray')
-    plt.xticks([]), plt.yticks([])
-    plt.title ('Boxed things in the image ' + filename)
-    '''
-    if (savePath is None):
-        savePath = 'boxing_results_for_' + filename + '_with_minDim=' +str(minDim) + '/' 
-    
-    if not os.path.exists(savePath): os.makedirs(savePath)
+    images = []
     
     for box in boxes:
         yM, ym, xM, xm = box
-
-        y = [yM, ym, ym, yM, yM]
-        x = [xm, xm, xM, xM, xm]
-        
         if (yM - ym >= minDim and xM - xm >= minDim):
-            #plt.plot (x,y,c='green')
             counter += 1
-            cv2.imwrite (os.path.join(savePath,'Boxed_' + str(counter) + '_' + filename), img[ym:yM, xm:xM])
-        #else:
-            #plt.plot (x,y,c='red',alpha=0.5)
+            images.append(img[ym:yM, xm:xM])
     
-    #plt.savefig(os.path.join(overviewPath,'boxing_overview_of_'+filename))
+    return images
