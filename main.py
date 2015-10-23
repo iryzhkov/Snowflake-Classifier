@@ -1,1 +1,4 @@
-from Source import image
+import sys
+sys.path.append('./Source')
+
+import image
