@@ -62,18 +62,18 @@ def bfs (data, mask, i, j):
     
     return mask, box
 
-def boxImage (filename, minDim = 40, t=24, savePath=None):
-
+def boxImage (filename, minDim = 30, t=24):
+    
     img = imread(filename)
     helpImg = np.zeros(img.shape)
     
-    h, l = edges.shape
+    h, l = img.shape
     
-    hm, lm = int(h*0.85),int(l*0.75)
-    hM, lM = int(h*0.15),int(l*0.25)
-   
+    hm, lm = int(h*0.95),int(l*0.85)
+    hM, lM = int(h*0.05),int(l*0.15)
+    
     im, jm, iM, jM = hm, lm, hM, lm
- 
+    
     for r in range(hM,hm):
         for c in range(lM,lm):
             if img[r,c] > t:
@@ -86,23 +86,22 @@ def boxImage (filename, minDim = 40, t=24, savePath=None):
                 if (c-2 < jm):
                     jm = c-2
                 helpImg[r-2:r+2,c-2:c+2] = 255
-                
+
     mask = np.zeros(img.shape)
-
     boxes = []
-
+    
     for i in range(im,iM,5):
         for j in range(jm,jM,5):
-            if (edges[i,j] == 255 and mask[i,j] == 0):
+            if (helpImg[i,j] == 255 and mask[i,j] == 0):
                 mask, box = bfs(helpImg, mask, i, j)
                 boxes.append(box)
     
     images = []
+
     
     for box in boxes:
         yM, ym, xM, xm = box
         if (yM - ym >= minDim and xM - xm >= minDim):
-            counter += 1
             images.append(img[ym:yM, xm:xM])
-    
+
     return images
