@@ -100,14 +100,14 @@ class Classifier:
         count = 0
         for i in range(self.nClasses):
             for filename in self.trainFileNames[i]:
-                r = self.classify(filename)
+                r = self.classifyForTrain(filename)
                 errorMatrix[i][r] += 1
                 count += 1
                 
                 self.trained = True
                 return errorMatrix
 
-def classify (self, filename):
+def classifyForTrain (self, filename):
     v, count = v, count = getHistData(filename, self.nBins)
         x = np.append(getVectorAngles(self.hists, v), [1])
         results = np.dot(x,self.coef)
