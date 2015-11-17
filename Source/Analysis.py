@@ -107,8 +107,8 @@ class Classifier:
                 self.trained = True
                 return errorMatrix
 
-def classifyForTrain (self, filename):
-    v, count = v, count = getHistData(filename, self.nBins)
+    def classifyForTrain (self, filename):
+        v, count = v, count = getHistData(filename, self.nBins)
         x = np.append(getVectorAngles(self.hists, v), [1])
         results = np.dot(x,self.coef)
         return np.argmax(results)
