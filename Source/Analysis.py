@@ -84,31 +84,80 @@ class Classifier:
         A = []
         B = []
         
-        for i in range(self.nClasses):
+        plt.figure(figsize=(14,7))
+        plt.subplot(121)
+        color=iter(cm.rainbow(np.linspace(0,1,self.nClasses)))
+        plt.title ('Train Data and linear classifier')
+        
+        #fix the problem with legend coloring
+        for i,c in zip(range(self.nClasses), color):
             for filename in self.trainFileNames[i]:
                 v, count = getHistData(filename, self.nBins)
+                
+                
                 x = np.append(getVectorAngles(self.hists, v), [1])
                 A.append(x.T)
                 b = np.zeros(len(self.classes))
                 
+                plt.scatter(x[0], x[1], c=c)
+                
                 b[i] = 1
                 B.append(b.T)
+        
         
         self.coef = np.linalg.lstsq(A, B)[0]
         errorMatrix = np.zeros((len(self.classes), len(self.classes)), dtype=float)
         
-        count = 0
-        for i in range(self.nClasses):
-            for filename in self.trainFileNames[i]:
-                r = self.classifyForTrain(filename)
-                errorMatrix[i][r] += 1
-                count += 1
+        x = np.linspace(-0.5,2,500)
+        v = np.array([x[0],0,1])
+        r = np.dot(v,self.coef)
+        
+        xMin, xMax = 0,0
+        yMin, yMax = 0,1
+        
+        before = np.argmax(r)
+        
+        for i in x:
+            v = np.array([i,0,1])
+            r = np.dot(v,self.coef)
+            if (np.argmax(r) != before):
+                xMin = i
+                break
+        
+        
+        v = np.array([x[0],1,1])
+        r = np.dot(v,self.coef)
+        before = np.argmax(r)
+        
+        for i in x:
+            v = np.array([i,1,1])
+            r = np.dot(v,self.coef)
+            if (np.argmax(r) != before):
+                xMax = i
+                break
                 
-                self.trained = True
-                return errorMatrix
+                x = [xMin, xMax]
+                y = [yMin, yMax]
+                
+                plt.plot(x,y,'r--')
+                
+                plt.subplot(122)
+                plt.title('Test Data and linear classifier')
+                plt.plot(x,y,'r--')
+                count = 0
+                color=iter(cm.rainbow(np.linspace(0,1,self.nClasses)))
+                for i, c in zip(range(self.nClasses),color):
+                    for filename in self.testFileNames[i]:
+                        r, x = self.classify(filename)
+                            plt.scatter(x[0], x[1], c=c)
+                                errorMatrix[i][r] += 1
+                                    count += 1
+                                
+                                self.trained = True
+                                    return errorMatrix
 
-    def classifyForTrain (self, filename):
+    def classify (self, filename):
         v, count = v, count = getHistData(filename, self.nBins)
         x = np.append(getVectorAngles(self.hists, v), [1])
         results = np.dot(x,self.coef)
-        return np.argmax(results)
+        return np.argmax(results), x
